@@ -20,32 +20,35 @@ try:
         _, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
 
         # Find Contours
+        contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
+        for cnt in contours:
+            # Filter out tiny noise contours
+            if cv2.contourArea(cnt) < 400:
+                continue
 
+            # Perimeter and Polygon Approximation
+            peri = cv2.arcLength(cnt, True)
+            approx = cv2.approxPolyDP(cnt, 0.04 * peri, True)
+            num_corners = len(approx)
 
+            # Identify Shape based on corner logic
+            x, y, w, h = cv2.boundingRect(approx)
+            shape = "Unknown"
 
-        # Perimeter and Polygon Approximation
-        peri = cv2.arcLength(cnt, True)
-        approx = cv2.approxPolyDP(cnt, 0.04 * peri, True)
-        num_corners = len(approx)
+            if num_corners == 3:
+                shape = "Pepper"
+            else:
+                shape = "Not a pepper"
 
-        # Identify Shape based on corner logic
-        x, y, w, h = cv2.boundingRect(approx)
-        shape = "Unknown"
+            # Draw contours and label on the frame
+            cv2.drawContours(frame, [approx], -1, (0, 255, 0), 2)
+            cv2.putText(frame, shape, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-        if num_corners == 3:
-            shape = "Pepper"
-        else:
-            shape = "Not a pepper"
-
-        # Draw contours and label on the frame
-        cv2.drawContours(frame, [approx], -1, (0, 255, 0), 2)
-        cv2.putText(frame, shape, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-
-    # Display the result
-    cv2.imshow("Live Shape Detection", frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        # Display the result
+        cv2.imshow("Live Shape Detection", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
 finally:
     picam.stop()
