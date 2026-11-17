@@ -1,56 +1,32 @@
-from picamera import PiCamera
-
-from picamera.array import PiRGBArray
-
+import numpy as np
 import cv2
 
-import time
+img = cv2.imread("C:\\Users\\Harle\\OneDrive\\Pictures\\Screenshots\\Screenshot 2026-11-10 161156.png")
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# Initialize Camera
-picam = PiCamera()
-raw_capture = PiRGBArray(picam)
+ret,thresh = cv2.threshold(gray,127,255,1)
 
+contours,h = cv2.findContours(thresh,1,2)
 
-try:
-    while True:
-        # Capture frame as a NumPy array
-        picam.capture(raw_capture, format="bgr")
-        frame = raw_capture.array
+for cnt in contours:
+    approx = cv2.approxPolyDP(cnt,0.05*cv2.arcLength(cnt,True),True)
+    print (len(approx))
+    if len(approx)==5:
+        print ("pentagon")
+        cv2.drawContours(img,[cnt],0,255,-1)
+    elif len(approx)==3:
+        print ("triangle")
+        cv2.drawContours(img,[cnt],0,(0,255,0),-1)
+    elif len(approx)==4:
+        print ("square")
+        cv2.drawContours(img,[cnt],0,(0,0,255),-1)
+    elif len(approx) == 9:
+        print ("half-circle")
+        cv2.drawContours(img,[cnt],0,(255,255,0),-1)
+    elif len(approx) > 15:
+        print ("circle")
+        cv2.drawContours(img,[cnt],0,(0,255,255),-1)
 
-        # Preprocessing: Grayscale and Thresholding
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        _, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
-
-        # Find Contours
-        contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-        for cnt in contours:
-            # Filter out tiny noise contours
-            if cv2.contourArea(cnt) < 400:
-                continue
-
-            # Perimeter and Polygon Approximation
-            peri = cv2.arcLength(cnt, True)
-            approx = cv2.approxPolyDP(cnt, 0.04 * peri, True)
-            num_corners = len(approx)
-
-            # Identify Shape based on corner logic
-            x, y, w, h = cv2.boundingRect(approx)
-            shape = "Unknown"
-
-            if num_corners == 3:
-                shape = "Pepper"
-            else:
-                shape = "Not a pepper"
-
-            # Draw contours and label on the frame
-            cv2.drawContours(frame, [approx], -1, (0, 255, 0), 2)
-            cv2.putText(frame, shape, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-
-        # Display the result
-        cv2.imshow("Live Shape Detection", frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-finally:
-    picam.close()
+cv2.imshow('img',img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
