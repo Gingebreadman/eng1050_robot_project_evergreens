@@ -7,13 +7,15 @@ import cv2
 import time
 
 # Initialize Camera
-picam = Picamera()
-picam.start()
+picam = PiCamera()
+raw_capture = PiRGBArray(picam)
+
 
 try:
     while True:
         # Capture frame as a NumPy array
-        frame = picam.capture_array()
+        picam.capture(raw_capture, format="bgr")
+        frame = raw_capture.array
 
         # Preprocessing: Grayscale and Thresholding
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -51,5 +53,4 @@ try:
             break
 
 finally:
-    picam.stop()
-    cv2.destroyAllWindows()
+    picam.close()
