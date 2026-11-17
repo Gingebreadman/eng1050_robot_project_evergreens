@@ -14,7 +14,8 @@ import time
 import math
 #import sphero_sdk
 sys.path.append('/home/pi/sphero-sdk-raspberrypi-python')
-from colorRecognition import getDominantColor #Imports the color detection from colorRecogintion.py
+from colorRecognition.py import getDominantColor #Imports the color detection from colorRecogintion.py
+from shapedetector.py import shapeDetect
 
 from sphero_sdk import SpheroRvrObserver
 rvr = SpheroRvrObserver()
@@ -51,14 +52,20 @@ def look_at_pepper(s, t):
     while pepper_number > 0: #While loop to move between peppers
         #Checking pepper color
         color = getDominantColor() #Assigns the function defined in colorRecogintion.py to the variable "color"
-        if color == "Red":
-            print("Red Pepper found")
-            pepper_number -= 1
-        elif color == "Green":
-            print("Green Pepper found")
-            pepper_number -= 1
+        shape = shapeDetect()
+        if shape == "Pepper":
+            if color == "Red":
+                print("Red Pepper found")
+                pepper_number -= 1
+            elif color == "Green":
+                print("Green Pepper found")
+                pepper_number -= 1
+            else:
+                print ("No pepper found")
+                continue
         else:
                 print ("No pepper found")
+                continue
 
         #driving between peppers
         rvr.drive_with_rotation(-s,0, t)

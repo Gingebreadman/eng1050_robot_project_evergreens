@@ -1,23 +1,28 @@
-#Lewis Kidd
-#november 3rd
-#melissa collins
-#MU Gold RGB value
+#Header
+#Matthew Baker
+#Evergreens
+#Dr. Melissa Collins
+#Engineering 1050
+#05 November, 2026
+#MU Gold
+#Problem: Detect a color from an image
+#Solution: Use color sensing to detect color values
 
 
-from matplotlib import image
+#from matplotlib import image
 import pandas as pd
 import numpy as np
 
 from glob import glob
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import cv2 as cv
 import sys
 
-plt.style.use('ggplot')
+#plt.style.use('ggplot')
 
 #finding image. His way of finding the image did not work for me but I found a tutorial and code from cv2 directly
 #The code I found in the tutorial is what is below. cited at the bottome of my work.
-img_cv = cv.imread(cv.samples.findFile("c:\\Users\\lewis\\OneDrive\\Pictures\\Screenshots\\Screenshot 2026-11-03 152234.png"))
+img_cv = cv.imread(cv.samples.findFile("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNt3Vmiss6u3rDW34hL5tURnzl8e4ZPqxHMCZ_HgiiAw&s=10"))
 #That links to the mizzou logo
 if img_cv is None:
     sys.exit("Could not read the image.")

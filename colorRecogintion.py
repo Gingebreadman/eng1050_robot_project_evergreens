@@ -16,15 +16,10 @@ import time
 import math
 
 camera = PiCamera()
-print("camera_activate", flush = True)
 raw_capture = PiRGBArray(camera)
-print("capture", flush = True)
 time.sleep(0.1)
-print("sleep 2 eletric boogaloo", flush = True)
 camera.capture(raw_capture, format="bgr")
-print("camera_capture", flush = True)
 image = raw_capture.array
-print("image", flush = True)
 
 cv2.imwrite('/tmp/eg_rvr_color.jpg', image)
 camera.close()
